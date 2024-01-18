@@ -1,6 +1,8 @@
 package com.nowcoder.community.community.controller;
 
 import com.nowcoder.community.community.service.AlphaService;
+import com.nowcoder.community.community.util.CommunityUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,5 +146,30 @@ public class AlphaController {
 
         return list;
     }
+
+    // Cookie实例 服务端代码
+    @RequestMapping(path = "/cookie/set", method = RequestMethod.GET)
+    @ResponseBody
+    public  String setCookie(HttpServletResponse response){
+        // 创建cookie
+        Cookie cookie = new Cookie("code", CommunityUtil.generateUUID());
+        // 设置Cookie生效的范围
+        cookie.setPath("/community/alpha");
+        // 设置Cookie的生存周期
+        cookie.setMaxAge(60 * 10);
+        // 发送cookie
+        response.addCookie(cookie);
+
+        return "set cookie";
+    }
+
+    @RequestMapping(path = "/cookie/get", method = RequestMethod.GET)
+    @ResponseBody
+    // 使用@CookieValue注解能够从众多的cookie中根据key选取我们想要的那个cookie
+    public String getCookie(@CookieValue("code") String code) {
+        System.out.println(code);
+        return "get cookie";
+    }
+
 }
 
