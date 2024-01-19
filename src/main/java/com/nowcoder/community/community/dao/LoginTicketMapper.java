@@ -12,7 +12,7 @@ public interface LoginTicketMapper {
     })
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    int insertLoginTicket(LoginTicket loginTicket);
+    void insertLoginTicket(LoginTicket loginTicket);
 
     @Select({
             "select id,user_Id,status,expired ",
@@ -29,6 +29,6 @@ public interface LoginTicketMapper {
             "</if>",
             "</script>"
     })
-    int updateStatus(String ticket, int status);
+    void updateStatus(String ticket, int status);
 
 }
