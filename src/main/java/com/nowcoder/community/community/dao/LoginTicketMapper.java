@@ -15,7 +15,7 @@ public interface LoginTicketMapper {
     int insertLoginTicket(LoginTicket loginTicket);
 
     @Select({
-            "select_id,user_id,status,expired ",
+            "select id,user_Id,status,expired ",
             "from login_ticket where ticket=#{ticket}"
     })
     LoginTicket selectByTicket(String ticket);
@@ -23,7 +23,7 @@ public interface LoginTicketMapper {
     //这里也是能写sql判断的语句的，和html中差不多，不过要写if语句必须要套上<script></script>
     @Update({
             "<script>",
-            "update login_ticket set status = # {status} where ticket=#{ticket} ",
+            "update login_ticket set status = #{status} where ticket=#{ticket} ",
             "<if test=\"ticket!=null\"> ",
             "and 1=1 ",
             "</if>",
