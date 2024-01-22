@@ -27,5 +27,4 @@ public class KaptchaConfig {
         kaptcha.setConfig(config);
         return kaptcha;
     }
-
 }
