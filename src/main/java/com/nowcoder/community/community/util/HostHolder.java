@@ -14,13 +14,12 @@ public class HostHolder {
         users.set(user);
     }
 
-    public  User getUser() {
+    public User getUser() {
         return users.get();
     }
 
     public void clear() {
         users.remove();
     }
-
 
 }
