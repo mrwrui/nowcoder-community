@@ -1,4 +1,6 @@
 package com.nowcoder.community.community.controller;
+import com.nowcoder.community.community.dao.UserMapper;
+import com.nowcoder.community.community.entity.Page;
 import com.nowcoder.community.community.entity.User;
 
 import com.nowcoder.community.community.service.UserService;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,6 +47,9 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @RequestMapping(path = "/setting",method = RequestMethod.GET)
     public String getSettingPage() {
         return "/site/setting";
@@ -59,7 +65,7 @@ public class UserController {
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         if(StringUtils.isBlank(suffix)) {
             model.addAttribute("error","文件的格式不正确！");
-            return "/site?setting";
+            return "/site/setting";
         }
         // 生成随机文件名
         fileName = CommunityUtil.generateUUID() + fileName;
@@ -104,6 +110,37 @@ public class UserController {
             logger.error("读取图片失败！", e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    @RequestMapping(path = "/change",method = RequestMethod.POST)
+    public String changePassword(String oldPassword, String newPassword, String confirmPassword1, Model model) {
+        if (oldPassword == null) {
+            model.addAttribute("error", "请输入原密码！");
+            return "/site/setting";
+        }
+        if (newPassword == null) {
+            model.addAttribute("error", "请输入新密码！");
+            return "/site/setting";
+        }
+        if (confirmPassword1 == null || !confirmPassword1.equals(newPassword)) {
+            model.addAttribute("error2", "两次密码不一致！");
+            return "/site/setting";
+        }
+
+        if (newPassword.length() < 8) {
+            model.addAttribute("error1", "新密码的长度不能少于8位！");
+            return "/site/setting";
+        }
+
+        User user = hostHolder.getUser();
+        oldPassword = CommunityUtil.md5(oldPassword + user.getSalt());
+        if (!user.getPassword().equals(oldPassword)) {
+            model.addAttribute("codeMsg", "原密码不正确！");
+            return "/site/setting";
+        }
+        newPassword = (CommunityUtil.md5(newPassword + user.getSalt()));
+        userMapper.updatePassword(user.getId(),newPassword);
+        return "redirect:/login";
     }
 
 }

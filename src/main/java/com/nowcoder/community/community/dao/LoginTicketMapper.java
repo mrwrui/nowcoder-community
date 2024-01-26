@@ -31,4 +31,14 @@ public interface LoginTicketMapper {
     })
     void updateStatus(String ticket, int status);
 
+    @Update({
+            "<script>",
+            "update login_ticket set password = #{password} where ticket=#{ticket} ",
+            "<if test=\"ticket!=null\"> ",
+            "and 1=1 ",
+            "</if>",
+            "</script>"
+    })
+    void updatePassword(String ticket, String password);
+
 }
