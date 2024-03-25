@@ -134,6 +134,11 @@ public class MessageController {
 
     }
 
+    @PostMapping("/error")
+    public String getErrorPage() {
+        return "/error/500";
+    }
+
 
 
 }
