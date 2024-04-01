@@ -4,6 +4,7 @@ import com.nowcoder.community.community.dao.UserMapper;
 import com.nowcoder.community.community.entity.Page;
 import com.nowcoder.community.community.entity.User;
 
+import com.nowcoder.community.community.service.LikeService;
 import com.nowcoder.community.community.service.UserService;
 import com.nowcoder.community.community.util.CommunityUtil;
 import com.nowcoder.community.community.util.HostHolder;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -50,6 +48,9 @@ public class UserController {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private LikeService likeService;
 
     @LoginRequired
     @RequestMapping(path = "/setting",method = RequestMethod.GET)
@@ -113,6 +114,21 @@ public class UserController {
             logger.error("读取图片失败！", e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    // 个人主页
+    @GetMapping("/profile/{userId}")
+    public String getProfilePage(@PathVariable int userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user==null) {
+            throw new RuntimeException("该用户不存在");
+        }
+        // 用户
+        model.addAttribute("user", user);
+        // 点赞
+        int userLikeCount = likeService.userLikeCount(userId);
+        model.addAttribute("likeCount",userLikeCount);
+        return "/site/profile";
     }
 
     @LoginRequired
